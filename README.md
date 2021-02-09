@@ -2,15 +2,17 @@
 
 Simple BLE client to showcase direct communication with the Handy using a buttplug.io-like messaging protocol.
 
+Direct BLE communication with the Handy is available starting with firmware 3.0.0-beta2. BLE can be activated by long-pressing the WiFi button until the LED becomes blue.
+
 While intended as a cross-platform tool, currently the BLE client **only works on Linux** via BlueZ and DBus. Windows and MacOS backends implementations are welcome contributions.
 
 ## Linux setup
 
 First install the necessary python requirements with:
 
-`pip install -r $IDF_PATH/tools/esp_prov/requirements.txt`
+`pip install -r requirements.txt`
 
-`pip install -r $IDF_PATH/tools/esp_prov/requirements_linux_extra.txt`
+`pip install -r requirements_linux_extra.txt`
 
 Then start the client with:
 

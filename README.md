@@ -26,8 +26,10 @@ The Handy simulates a handyplug-like server, to which a client can connect by es
 - Protocomm overview: https://docs.espressif.com/projects/esp-idf/en/v4.0.2/api-reference/provisioning/provisioning.html
 - Google Protobuf: https://developers.google.com/protocol-buffers/
 
-A client is thus first required to establish a Protocomm session over BLE, and then send Google Protobuf packets to the `handyplug` protocomm endpoint as defined by the /handyplug/handyplug.proto file. The protocol definition resembles the original handyplug syntax in the hope that it will provide a familiar syntax to 3rd party developers, as well as improve compatibility with the existing handyplug ecosystem (using the Google.Protobuf.JsonFormatter class on the protocol definition provides a JSON representation which can be easily manipulated to be fully compatible with the original specification).
+A client is thus first required to establish a Protocomm session over BLE, and then send Google Protobuf packets to the `handyplug` protocomm endpoint as defined by the /handy/handyplug.proto file. The protocol definition resembles a buttplug.io syntax in the hope to provide a familiar mean to 3rd party developers and allow easy integration with the existing buttplug.io ecosystem (using the Google.Protobuf.JsonFormatter class on the protocol definition provides a near-compatible JSON representation).
 
-Once the Protocomm session is established, the client is required to perform the usual handyplug handshake procedure (RequestServerInfo->ServerInfo) and regularly send Ping packets.
-
-For obvious reasons, only the LinearCmd directive is internally supported. Other commands will return an error.
+The overall procedure looks like the following:
+- A client connects to the Handy via BLE and establishes a Protocomm session with security profile 0. See sample code for details.
+- Once the session is established, the client sends an information request (RequestServerInfo) to get the maximum allowed ping time before the connection is reset
+- The client then proceeds to send Ping packets at regular intervals, to which the Handy replies with Ok messages.
+- Commands like LinearCmd can now be sent.

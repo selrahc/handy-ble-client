@@ -19,8 +19,8 @@ import enum
 import random
 import security
 import transport
-import buttplug_io
 import threading
+from . import handyplug_pb2 as handyplug
 
 class BLEClient:
 
@@ -46,17 +46,17 @@ class BLEClient:
                 self.join()
 
         def sendping(self):
-            req_payload = buttplug_io.Payload()
+            req_payload = handyplug.Payload()
             req_message = req_payload.Messages.add()
             req_message.Ping.Id = random.randint(0, 4294967295)
             req = req_payload.SerializeToString()
             enc_req = self.client.security_ctx.encrypt_data(
                 req.decode('latin-1'))
             enc_resp = self.client.bletransport.send_data(
-                "buttplug.io", enc_req)
+                "handyplug", enc_req)
             resp = self.client.security_ctx.decrypt_data(
                 enc_resp.encode('latin-1'))
-            resp_payload = buttplug_io.Payload()
+            resp_payload = handyplug.Payload()
             resp_payload.ParseFromString(resp)
             ok = False
             for resp_message in resp_payload.Messages:
@@ -99,21 +99,21 @@ class BLEClient:
                         "Could not establish protocomm session (is security scheme correct?")
 
                 # Request server information
-                print("Requesting buttplug.io server information")
-                req_payload = buttplug_io.Payload()
+                print("Requesting handyplug server information")
+                req_payload = handyplug.Payload()
                 req_message = req_payload.Messages.add()
                 req_message.RequestServerInfo.Id = random.randint(
                     0, 4294967295)
                 req = req_payload.SerializeToString()
                 enc_req = self.security_ctx.encrypt_data(req.decode('latin-1'))
                 enc_resp = self.bletransport.send_data(
-                    "buttplug.io", enc_req)
+                    "handyplug", enc_req)
                 resp = self.security_ctx.decrypt_data(
                     enc_resp.encode('latin-1'))
 
                 # Parse information from response
                 print("Parsing response")
-                resp_payload = buttplug_io.Payload()
+                resp_payload = handyplug.Payload()
                 resp_payload.ParseFromString(resp)
                 resp_isok = False
                 for resp_message in resp_payload.Messages:
@@ -156,5 +156,5 @@ class BLEClient:
                 f"Cannot send data to {self.devname} while disconnected")
         request = self.security_ctx.encrypt_data(data.decode('latin-1'))
         response = self.bletransport.send_data(
-            "buttplug.io", request)
+            "handyplug", request)
         return self.security_ctx.decrypt_data(response.encode('latin-1'))

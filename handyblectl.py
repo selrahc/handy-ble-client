@@ -17,12 +17,11 @@
 
 import random 
 from PyInquirer import prompt
-import buttplug_io
 import handy
 
 def linearcmd_build(duration,position):
     # Add message to payload
-    payload = buttplug_io.Payload()
+    payload = handy.handyplug.Payload()
     message = payload.Messages.add()
     message.LinearCmd.Id = random.randint(0,4294967295)
     message.LinearCmd.DeviceIndex = 0

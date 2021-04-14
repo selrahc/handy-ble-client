@@ -17,6 +17,7 @@
 
 import random 
 from PyInquirer import prompt
+import time
 import handy
 
 def linearcmd_build(duration,position):
@@ -38,6 +39,19 @@ def inputvalidator(input,lowvalue,highvalue,outtype):
     except ValueError:
         return "Invalid input"
 
+def linearcmd_test(handyclient,duration,position):
+    response = handyclient.send_data(linearcmd_build(duration,position))
+    resp_payload = handy.handyplug.Payload()
+    resp_payload.ParseFromString(response)
+    resp_isok = False
+    for resp_message in resp_payload.Messages:
+        if resp_message.HasField("Ok"):
+            resp_isok = True
+            break
+    if not resp_isok:
+        raise RuntimeError(
+            "Received incorrect response")
+
 def main():
 
     # Create a new handy BLE client object
@@ -54,7 +68,8 @@ def main():
                 'choices': [
                     'Connect',
                     'Disconnect',
-                    'LinearCmd'
+                    'LinearCmd',
+                    'Sequential LinearCmd test'
                 ]
             }
         ]
@@ -88,10 +103,19 @@ def main():
                 }
             ]
             answer = prompt(questions)
-
-            request = linearcmd_build(int(answer['duration']),float(answer['position']))
             try:
-                response = handyclient.send_data(request)
+                linearcmd_test(handyclient,int(answer['duration']),float(answer['position']))
+            except RuntimeError as e:
+                print(e)
+        elif (answer['command'] == "Sequential LinearCmd test"):
+            try:
+                linearcmd_test(handyclient,2000,1)
+                time.sleep(1)
+                linearcmd_test(handyclient,1000,0)
+                time.sleep(0.5)
+                linearcmd_test(handyclient,500,1)
+                time.sleep(0.25)
+                linearcmd_test(handyclient,250,0)
             except RuntimeError as e:
                 print(e)
 
